@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:test_in_app_purchase/src/QRCode/qr_code_scanner.dart';
 
 import 'consumable_store.dart';
 
@@ -28,6 +29,9 @@ class _MyAppState extends State<InAppPurchaseScreen> {
   bool _purchasePending = false;
   bool _loading = true;
   String _queryProductError = null;
+  String _paymentStatus = 'NONE';
+  String _paymentType = 'NONE';
+  String _chargingStatus = 'NONE';
 
   @override
   void initState() {
@@ -125,9 +129,11 @@ class _MyAppState extends State<InAppPurchaseScreen> {
       stack.add(
         ListView(
           children: [
-            _buildConnectionCheckTile(),
+            // _buildConnectionCheckTile(),
+            _statusInfo(),
             _buildProductList(),
-            _buildConsumableBox(),
+            _buildQRCodeStuff(),
+            // _buildConsumableBox(),
           ],
         ),
       );
@@ -152,17 +158,41 @@ class _MyAppState extends State<InAppPurchaseScreen> {
       );
     }
 
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('IAP Example'),
-        ),
+    var appBar2 = AppBar(
+          title: const Text('Payment Gateway'),
+        );
+    return Scaffold(
+        appBar: appBar2,
         body: Stack(
           children: stack,
         ),
-      ),
     );
   }
+
+ListTile _buildQRCodeStuff() {
+  return ListTile(
+    title: Text(
+      'QR CODE',
+    ),
+    subtitle: Text(
+      'Pay via QR code, please scan it',
+    ),
+    trailing: 
+      FlatButton(
+      child: Text('Scan'),
+      color: Colors.green[800],
+      textColor: Colors.white,
+      onPressed: () {
+           Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => QRCodeScanner(),
+              ));
+      },
+    ));
+}
+
+
 
   Card _buildConnectionCheckTile() {
     if (_loading) {
@@ -201,7 +231,7 @@ class _MyAppState extends State<InAppPurchaseScreen> {
       return Card();
     }
     final ListTile productHeader = ListTile(
-        title: Text('Products for Sale',
+        title: Text('Google Pay',
             style: Theme.of(context).textTheme.headline));
     List<ListTile> productList = <ListTile>[];
     if (!_notFoundIds.isEmpty) {
@@ -259,6 +289,31 @@ class _MyAppState extends State<InAppPurchaseScreen> {
     return Card(
         child:
             Column(children: <Widget>[productHeader, Divider()] + productList));
+  }
+
+Card _statusInfo(){
+   return Card(
+      child: Table(
+        defaultColumnWidth: FixedColumnWidth(150.0),
+        children: [
+          _buildTableRow("Payment Status : , $_paymentStatus"),
+          _buildTableRow("Payment Type : , $_paymentType"),
+          _buildTableRow("Charging Status : , $_chargingStatus"),
+        ],
+      ),
+    );
+}
+  //payment &Charging status on top
+   TableRow _buildTableRow(String listOfNames) {
+    return TableRow(
+      children: listOfNames.split(',').map((name) {
+        return Container(
+          alignment: Alignment.centerLeft,
+          child: Text(name, style: TextStyle(fontSize: 18.0)),
+          padding: EdgeInsets.all(8.0),
+        );
+      }).toList(),
+    );
   }
 
   Card _buildConsumableBox() {
@@ -322,6 +377,9 @@ class _MyAppState extends State<InAppPurchaseScreen> {
       setState(() {
         _purchasePending = false;
         _consumables = consumables;
+        _paymentStatus = 'Paid';
+        _paymentType = 'Google Pay';
+        _chargingStatus = 'Connected';
       });
     } else {
       setState(() {

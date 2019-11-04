@@ -196,11 +196,11 @@ class _LoginScreenState extends State<LoginScreen> {
      //if (asyncResult == "success")
     // {
 
-      Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => Homescreen(),
-    ));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Homescreen(),
+      ));
     
          //NavigationRouter.switchToHome(context) ;
     //      Navigator.pushNamed(context, "/HomeScreen", 
@@ -208,9 +208,6 @@ class _LoginScreenState extends State<LoginScreen> {
     //   builder: (context) => HomeScreen(text: textToSend,),
     // ));
        //print('Password: ${textToSend}');
-
-         
-         
     }
  }
  void addBoolToSF() async {
